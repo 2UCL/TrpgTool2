@@ -1,0 +1,19 @@
+{
+    "name":"TrpgTool2",
+    "description":"for CoC TRPG Tool 2",
+    "version": "0.1.0",
+    "manifest_version":3,
+    "permissions":[],
+
+    "content_scripts":[
+        {
+            "matches":["https://charasheet.vampire-blood.net/*"],
+            "css":[
+                "css/extend.css"
+            ],
+            "js":[
+                "js/vampireV.js"
+            ]
+        }
+    ]
+}

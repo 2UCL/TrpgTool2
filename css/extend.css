@@ -1,0 +1,85 @@
+@charset "UTF-8";
+
+.xbtn {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border: 1px solid transparent;
+    margin: 2px;
+    padding: .375rem .75rem;
+    font-size: .9rem;
+    line-height: 1.6;
+    border-radius: .25rem;
+    -webkit-transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.btn-xccf {
+    color: #fff;
+    background-color: #202020;
+    border-color: #202020;
+}
+
+.btn-xccf:hover {
+    color: #ffffff;
+    background-color: #c1272d;
+    border-color: #c1272d
+}
+
+.btn-xccf.focus,.btn-xccf:focus {
+    box-shadow: 0 0 0 .2rem rgba(193,39,45,.5)
+}
+
+.btn-xccf.disabled,.btn-xccf:disabled {
+    color: #fff;
+    background-color: #705050;
+    border-color: #705050
+}
+
+.btn-xccf:not(:disabled):not(.disabled).active,.btn-xccf:not(:disabled):not(.disabled):active,.show>.btn-xccf.dropdown-toggle {
+    color: #fff;
+    background-color: #5c1212;
+    border-color: #5c1212
+}
+
+.btn-xccf:not(:disabled):not(.disabled).active:focus,.btn-xccf:not(:disabled):not(.disabled):active:focus,.show>.btn-xccf.dropdown-toggle:focus {
+    box-shadow: 0 0 0 .2rem rgba(193,39,45,.5)
+}
+
+.btn-xjso {
+    color: #000;
+    background-color: #fda030;
+    border-color: #fda030;
+}
+
+.btn-xjso:hover {
+    color: #000;
+    background-color: #fd6600;
+    border-color: #fd6600
+}
+
+.btn-xjso.focus,.btn-xjso:focus {
+    box-shadow: 0 0 0 .2rem #fd660080
+}
+
+.btn-xjso.disabled,.btn-xjso:disabled {
+    color: #000;
+    background-color: #706550;
+    border-color: #706550
+}
+
+.btn-xjso:not(:disabled):not(.disabled).active,.btn-xjso:not(:disabled):not(.disabled):active,.show>.btn-xjso.dropdown-toggle {
+    color: #fff;
+    background-color: #885522;
+    border-color: #885522
+}
+
+.btn-xjso:not(:disabled):not(.disabled).active:focus,.btn-xjso:not(:disabled):not(.disabled):active:focus,.show>.btn-xjso.dropdown-toggle:focus {
+    box-shadow: 0 0 0 .2rem #88552280
+}
+
