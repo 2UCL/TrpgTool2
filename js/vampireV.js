@@ -1,5 +1,44 @@
 function export_CCF(){
-    alert("yeah");
+    var req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        // respnse OK & connection OK then...
+        if(req.readyState == 4){
+            if (req.status == 200){
+                var base ={} , obj = {}, stat = [{},{},{}];
+                const source = JSON.parse(req.responseText);
+
+                obj.name = source.pc_name;
+                obj.memo = "via TrpgTool2";
+                obj.initiative = Number(source.NP4);
+                obj.externalUrl = location.href;
+
+                stat[0].label = "HP";
+                stat[0].value = source.NP9;
+                stat[0].max = source.NP9;
+
+                stat[1].label = "MP";
+                stat[1].value = source.NP10;
+                stat[1].max = source.NP10;
+
+                stat[2].label = "SAN";
+                stat[2].value = source.SAN_Left;
+                stat[2].max = source.SAN_Left;
+                obj.status = stat;
+                
+                base.kind = "character";
+                base.data = obj;
+
+                const expo = JSON.stringify(base, null,"");
+                navigator.clipboard.writeText(expo);
+
+                info("クリップボードへの出力が完了しました。CCFOLIAの部屋上で 貼り付け(Ctrl+V) が可能です。");
+            }else{
+                alert("データ取得に失敗しました");
+            }
+        }
+    };
+    req.open("GET", location.href+".js", false);
+    req.send(null);
 }
 
 function export_JSO(){
@@ -11,6 +50,22 @@ function export_JSO(){
         temp.click();temp.remove();
     }
     
+}
+
+function info(text){
+    if (document.getElementsByClassName("alert").length){
+        document.getElementsByClassName("alert")[0].innerHTML = text;
+    }else{
+        const content = document.querySelector("div[class=maincontent]");
+
+            const base = document.createElement("div");
+            base.classList.add("alert","alert-success");
+            base.role="alert";
+                const mes = document.createTextNode(text);
+                base.appendChild(mes);
+    
+        content.prepend(base);
+    }
 }
 
 function vMain(){
@@ -42,7 +97,7 @@ function vMain(){
             spnJSO.setAttribute("rel","tooltip")
             spnJSO.dataset["toggle"]="tooltip";
             spnJSO.title="";
-            spnJSO.dataset["originalTitle"]="JSOOLIA用の駒データを出力します。<br>※クリップボードが上書きされます。";
+            spnJSO.dataset["originalTitle"]="JSON形式のファイル出力します。";
 
                 const btnJSO = document.createElement("input");
                 btnJSO.onclick=export_JSO;
