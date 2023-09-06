@@ -1,3 +1,5 @@
+let randomCount = 0;
+
 const btnRND = document.createElement("input");
     btnRND.id="xBtnRnd";
     btnRND.onclick=random_sure;
@@ -100,25 +102,58 @@ function random_sure(){
 }
 
 function random_exec(){
+    randomCount++;
+    random_clear();
+    const xResSpn = document.getElementById("xResSpn");
+    if ( xResSpn != null ) {
+        const xResCnt = document.getElementById("xResCntS");
+        xResCnt.innerText = randomCount;
+    }else{
+        const base = document.getElementById("xSpnRnd");
+        const resSpan = document.createElement("span");
+            resSpan.id="xResSpn";
+            resSpan.classList.add("alert","alert-success");
+            resSpan.role="alert";
 
+            const resMain = document.createTextNode("能力値をランダムに設定しました。 振り直し回数:")
+            const resCntS = document.createElement("span");
+                resCntS.id = "xResCntS";
+                const resCntT = document.createTextNode(randomCount);
+                resCntS.appendChild(resCntT);
 
-    random_close()
+            const btnRET = document.createElement("input");
+                btnRET.id="xBtnRet";
+                btnRET.onclick=random_exec;
+                btnRET.value="AGAIN!";
+                btnRET.type="button";
+                btnRET.classList.add("xbtn","btn-xyes");
+
+            resSpan.appendChild(resMain);
+            resSpan.appendChild(resCntS);
+            resSpan.appendChild(btnRET);
+        base.appendChild(resSpan);
+    }
+}
+
+function random_clear(){
+    const xAskSpn = document.getElementById("xAskSpn");
+    if ( xAskSpn != null ) xAskSpn.remove();
 }
 
 function random_close(){
-    const xAskSpn = document.getElementById("xAskSpn");
-    if ( xAskSpn != null ) xAskSpn.remove();
-    
+    random_clear();
     document.getElementById("xSpnRnd").appendChild(btnRND);
 }
 
 function info(text){
-    if (document.getElementsByClassName("alert").length){
-        document.getElementsByClassName("alert")[0].innerHTML = text;
+    const preInfo = document.getElementById("xInfo");
+    if (preInfo != null){
+        preInfo.innerHTML = text;
     }else{
         const content = document.querySelector("div[class=maincontent]");
 
             const base = document.createElement("div");
+            base.id = "xInfo";
             base.classList.add("alert","alert-success");
             base.role="alert";
                 const mes = document.createTextNode(text);
