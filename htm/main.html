@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TrpgTool2 main popup</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/css/main.css" type="text/css">
+        <script src="/js/main.js"></script>
+    </head>
+    <body>
+        
+        <div class="title">
+            <img src="/img/title.png" alt="TrpgTool2">
+        </div>
+        
+        <span id="mainBase">
+        <div class="ctitle">
+                <center>Manual Dice</center>
+        </div>
+        <div class="main">
+            <center>(個数) D (ダイス最大値) を指定してください</center>
+        </div>
+
+        <div class="main2">
+            <center>
+            <select id="preD" class="preD" tabindex="0"></select>
+                D
+            <input type="number" id="sufD" class="sufD" min="1" max="999" value="100" tabindex="0"/>
+            <button type="submit" class="exeD">Role!</button>
+            </center>
+        </div>
+    
+        <br>
+        <div class="verMain">
+            <center>
+                <span class="uLine" id="verMain">
+                    Version <span id="version"></span> - 2UCL
+                </span>
+            </center>
+        </div>
+        </span>
+
+        <div class="popup" id="pop1">
+            <object data="/htm/credit.html" type="text/html" width="100%" height="280px"></object>
+            <center> <button id="pop1x" type="button" class="popClose">閉じる</button> </center>
+        </div>
+    </body>
+</html>

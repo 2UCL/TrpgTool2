@@ -1,3 +1,10 @@
+const btnRND = document.createElement("input");
+    btnRND.id="xBtnRnd";
+    btnRND.onclick=random_sure;
+    btnRND.value="RANDOMIZE";
+    btnRND.type="button";
+    btnRND.classList.add("xbtn","btn-xrnd");
+
 function export_CCF(){
     var req = new XMLHttpRequest();
     req.onreadystatechange = function() {
@@ -33,7 +40,7 @@ function export_CCF(){
 
                 info("クリップボードへの出力が完了しました。CCFOLIAの部屋上で 貼り付け(Ctrl+V) が可能です。");
             }else{
-                alert("データ取得に失敗しました");
+                alert("データ取得に失敗しました ("+req.status+")");
             }
         }
     };
@@ -50,6 +57,59 @@ function export_JSO(){
         temp.click();temp.remove();
     }
     
+}
+
+function random_sure(){
+    let isValueChanged = 0;
+    const xBtnRnd = document.getElementById("xBtnRnd");
+    for (let i = 1; i<=8 ; i++){
+        isValueChanged += document.getElementById("NA"+i).selectedIndex
+    }
+    if (isValueChanged){
+        if(xBtnRnd != null){
+            xBtnRnd.remove()
+            const base = document.getElementById("xSpnRnd");
+            const askSpan = document.createElement("span");
+            askSpan.id="xAskSpn";
+            askSpan.classList.add("alert","alert-danger");
+            askSpan.role="alert";
+
+                const randSure = document.createTextNode("※ 能力値が上書きされます。よろしいですか？ ");
+
+                const btnYES = document.createElement("input");
+                btnYES.id="xBtnYes";
+                btnYES.onclick=random_exec;
+                btnYES.value="Yes";
+                btnYES.type="button";
+                btnYES.classList.add("xbtn","btn-xyes");
+
+                const btnNO = document.createElement("input");
+                btnNO.id="xBtnNo";
+                btnNO.onclick=random_close;
+                btnNO.value="No";
+                btnNO.type="button";
+                btnNO.classList.add("xbtn","btn-xno");
+
+                askSpan.appendChild(randSure);
+                askSpan.appendChild(btnYES);
+                askSpan.appendChild(btnNO);
+            base.appendChild(askSpan);
+        }
+        
+    }
+}
+
+function random_exec(){
+
+
+    random_close()
+}
+
+function random_close(){
+    const xAskSpn = document.getElementById("xAskSpn");
+    if ( xAskSpn != null ) xAskSpn.remove();
+    
+    document.getElementById("xSpnRnd").appendChild(btnRND);
 }
 
 function info(text){
@@ -69,6 +129,7 @@ function info(text){
 }
 
 function vMain(){
+    // add object
     const side = document.querySelector("aside.leftsidebar.fixed");
 
     const base = document.createElement("section");
@@ -80,6 +141,7 @@ function vMain(){
         const main = document.createElement("div");
             const spnCCF = document.createElement("span");
             spnCCF.setAttribute("rel","tooltip")
+            spnCCF.dataset["html"]="true";
             spnCCF.dataset["toggle"]="tooltip";
             spnCCF.title="";
             spnCCF.dataset["originalTitle"]="CCFOLIA用の駒データを出力します。<br>※クリップボードが上書きされます。";
@@ -95,13 +157,14 @@ function vMain(){
 
             const spnJSO = document.createElement("span");
             spnJSO.setAttribute("rel","tooltip")
+            spnJSO.dataset["html"]="true";
             spnJSO.dataset["toggle"]="tooltip";
             spnJSO.title="";
             spnJSO.dataset["originalTitle"]="JSON形式のファイル出力します。";
 
                 const btnJSO = document.createElement("input");
                 btnJSO.onclick=export_JSO;
-                btnJSO.value="JSON 出力";
+                btnJSO.value="JSON ダウンロード";
                 btnJSO.type="button";
                 btnJSO.classList.add("full","xbtn","btn-xjso");
                 
@@ -112,8 +175,27 @@ function vMain(){
     side.appendChild(base);
 }
 
-if (
-    document.getElementsByClassName("leftsidebar fixed").length & 
-    document.getElementsByClassName("show_id").length ) {
-        vMain();
+function vRand(){
+    // add rand option
+    const base = document.getElementById("status_disp").getElementsByClassName("disp")[0];
+        const spnRND = document.createElement("span");
+        spnRND.id="xSpnRnd";
+        spnRND.setAttribute("rel","tooltip")
+        spnRND.dataset["html"]="true";
+        spnRND.dataset["toggle"]="tooltip";
+        spnRND.title="";
+        spnRND.dataset["originalTitle"]="能力値をダイスで決定します。<br>※現在の能力値が上書きされます。";
+
+        spnRND.appendChild(btnRND);
+    base.appendChild(spnRND);
 }
+
+
+if ( document.getElementsByClassName("leftsidebar fixed").length ){
+    // CoC's CS page
+    if( document.getElementById("status_disp") != null ) vRand();
+    
+    // already registed
+    if( document.getElementsByClassName("show_id").length ) vMain();
+}
+    
