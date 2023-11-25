@@ -7,6 +7,17 @@ const btnRND = document.createElement("input");
     btnRND.type="button";
     btnRND.classList.add("xbtn","btn-xrnd");
 
+const selects = [
+    document.getElementById("NA1"),
+    document.getElementById("NA2"),
+    document.getElementById("NA3"),
+    document.getElementById("NA4"),
+    document.getElementById("NA5"),
+    document.getElementById("NA6"),
+    document.getElementById("NA7"),
+    document.getElementById("NA8")
+]
+
 function export_CCF(){
     var req = new XMLHttpRequest();
     req.onreadystatechange = function() {
@@ -64,47 +75,77 @@ function export_JSO(){
 function random_sure(){
     let isValueChanged = 0;
     const xBtnRnd = document.getElementById("xBtnRnd");
-    for (let i = 1; i<=8 ; i++){
-        isValueChanged += document.getElementById("NA"+i).selectedIndex
+    if(xBtnRnd != null) xBtnRnd.remove();
+    for (var i = 0; i < selects.length ; i++){
+        isValueChanged += selects[i].selectedIndex;
     }
     if (isValueChanged){
-        if(xBtnRnd != null){
-            xBtnRnd.remove()
-            const base = document.getElementById("xSpnRnd");
-            const askSpan = document.createElement("span");
+        const base = document.getElementById("xSpnRnd");
+        const askSpan = document.createElement("span");
             askSpan.id="xAskSpn";
             askSpan.classList.add("alert","alert-danger");
             askSpan.role="alert";
-
                 const randSure = document.createTextNode("※ 能力値が上書きされます。よろしいですか？ ");
-
-                const btnYES = document.createElement("input");
-                btnYES.id="xBtnYes";
-                btnYES.onclick=random_exec;
-                btnYES.value="Yes";
-                btnYES.type="button";
-                btnYES.classList.add("xbtn","btn-xyes");
-
-                const btnNO = document.createElement("input");
-                btnNO.id="xBtnNo";
-                btnNO.onclick=random_close;
-                btnNO.value="No";
-                btnNO.type="button";
-                btnNO.classList.add("xbtn","btn-xno");
-
-                askSpan.appendChild(randSure);
-                askSpan.appendChild(btnYES);
-                askSpan.appendChild(btnNO);
-            base.appendChild(askSpan);
-        }
-        
+                    const btnYES = document.createElement("input");
+                        btnYES.id="xBtnYes";
+                        btnYES.onclick=random_exec;
+                        btnYES.value="Yes";
+                        btnYES.type="button";
+                        btnYES.classList.add("xbtn","btn-xyes");
+                    const btnNO = document.createElement("input");
+                        btnNO.id="xBtnNo";
+                        btnNO.onclick=random_close;
+                        btnNO.value="No";
+                        btnNO.type="button";
+                        btnNO.classList.add("xbtn","btn-xno");
+            askSpan.appendChild(randSure);
+            askSpan.appendChild(btnYES);
+            askSpan.appendChild(btnNO);
+        base.appendChild(askSpan);
+    }else{
+        random_exec();
     }
+}
+
+function dice(dice,max){
+    var tmp = 0;
+    var res = 0;
+    var resa = [];
+    for (var i = 0; i < dice; i++){
+        tmp = Math.floor( Math.random() * max) + 1;
+        res += tmp;
+        resa.push(tmp);
+    }
+    console.log(res,resa);
+    return [res,resa];
 }
 
 function random_exec(){
     randomCount++;
     random_clear();
     const xResSpn = document.getElementById("xResSpn");
+    // table random
+    for (var i = 0; i < selects.length; i++){
+        console.log("for1 :" + i);
+        // 礼儀は守らなきゃ... 
+        //STR...APP = 3D6; SIZ,INT = 2D6+6; EDU = 3D6+3
+        if (i < 5){
+            selects[i].selectedIndex = (dice(3,6)[0] -1);
+        } else {
+            switch(i){
+                case 5:
+                    selects[i].selectedIndex = (dice(2,6)[0] + 6 -1);
+                    break;
+                case 6:
+                    selects[i].selectedIndex = (dice(2,6)[0] + 6 -7);
+                    break;
+                default:
+                    //case7
+                    selects[i].selectedIndex = (dice(3,6)[0] + 3 -5);
+            }
+        }
+    }
+
     if ( xResSpn != null ) {
         const xResCnt = document.getElementById("xResCntS");
         xResCnt.innerText = randomCount;
