@@ -271,7 +271,8 @@ function vRand(){
 
 if ( document.getElementsByClassName("leftsidebar fixed").length ){
     // CoC's CS page
-    if( document.getElementById("status_disp") != null ) vRand();
+    if( document.querySelector("[href=\"https://charasheet.vampire-blood.net/coc_pc_making.html\"]") != null ) vRand();
+    // if( document.getElementById("status_disp") != null ) vRand();
     
     // already registed
     if( document.getElementsByClassName("show_id").length ) vMain();
