@@ -126,7 +126,6 @@ function random_exec(){
     const xResSpn = document.getElementById("xResSpn");
     // table random
     for (var i = 0; i < selects.length; i++){
-        console.log("for1 :" + i);
         // 礼儀は守らなきゃ... 
         //STR...APP = 3D6; SIZ,INT = 2D6+6; EDU = 3D6+3
         if (i < 5){
@@ -144,6 +143,7 @@ function random_exec(){
                     selects[i].selectedIndex = (dice(3,6)[0] + 3 -5);
             }
         }
+        selects[i].selected = true;
     }
 
     if ( xResSpn != null ) {
@@ -174,6 +174,8 @@ function random_exec(){
             resSpan.appendChild(btnRET);
         base.appendChild(resSpan);
     }
+    // onchange
+    selects[0].dispatchEvent(new Event("change"));
 }
 
 function random_clear(){
