@@ -143,8 +143,10 @@ function random_exec(){
                     selects[i].selectedIndex = (dice(3,6)[0] + 3 -5);
             }
         }
-        selects[i].selected = true;
     }
+    
+    // onchange
+    selects[0].dispatchEvent(new Event("change"));
 
     if ( xResSpn != null ) {
         const xResCnt = document.getElementById("xResCntS");
@@ -174,8 +176,6 @@ function random_exec(){
             resSpan.appendChild(btnRET);
         base.appendChild(resSpan);
     }
-    // onchange
-    selects[0].dispatchEvent(new Event("change"));
 }
 
 function random_clear(){
