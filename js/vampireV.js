@@ -24,27 +24,51 @@ function export_CCF(){
         // respnse OK & connection OK then...
         if(req.readyState == 4){
             if (req.status == 200){
-                var base ={} , obj = {}, stat = [{},{},{}];
+                var base ={} , obj = {}, stat = [{},{},{}], pram = [{},{},{},{},{},{},{},{}], cmd = "";
                 const source = JSON.parse(req.responseText);
 
+                // base info
                 obj.name = source.pc_name;
                 obj.memo = "via TrpgTool2";
                 obj.initiative = Number(source.NP4);
                 obj.externalUrl = location.href;
 
+                // status
                 stat[0].label = "HP";
                 stat[0].value = source.NP9;
                 stat[0].max = source.NP9;
-
                 stat[1].label = "MP";
                 stat[1].value = source.NP10;
                 stat[1].max = source.NP10;
-
                 stat[2].label = "SAN";
                 stat[2].value = source.SAN_Left;
                 stat[2].max = source.SAN_Left;
                 obj.status = stat;
                 
+                // params
+                pram[0].label = "STR";
+                pram[0].value = source.NP1;
+                pram[1].label = "CON";
+                pram[1].value = source.NP2;
+                pram[2].label = "POW";
+                pram[2].value = source.NP3;
+                pram[3].label = "DEX";
+                pram[3].value = source.NP4;
+                pram[4].label = "APP";
+                pram[4].value = source.NP5;
+                pram[5].label = "SIZ";
+                pram[5].value = source.NP6;
+                pram[6].label = "INT";
+                pram[6].value = source.NP7;
+                pram[7].label = "EDU";
+                pram[7].value = source.NP8;
+                obj.params = pram;
+
+                // commands - chat pallet
+                
+                obj.commands = cmd;
+                
+
                 base.kind = "character";
                 base.data = obj;
 

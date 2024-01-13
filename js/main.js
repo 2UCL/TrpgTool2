@@ -32,11 +32,27 @@ function manualDice(){
 }
 
 function execLink(){
+    document.getElementById("exeD").onclick= rollDice;
     document.getElementById("pop1x").onclick= popupClose;
     document.getElementById("verMain").onclick= popupShow;
 
 }
 
+
+function rollDice(){
+    var dice = document.getElementById("preD").selectedIndex +1;
+    var max = Number(document.getElementById("sufD").value);
+    
+    var tmp = 0;
+    var res = 0;
+    var resa = [];
+    for (var i = 0; i < dice; i++){
+        tmp = Math.floor( Math.random() * max) + 1;
+        res += tmp;
+        resa.push(tmp);
+    }
+    console.log(res,resa);
+}
 
 
 var ScrollPositionKeep = 0;
