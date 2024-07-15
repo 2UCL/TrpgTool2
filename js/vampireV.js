@@ -76,6 +76,7 @@ function export_CCF(){
                 navigator.clipboard.writeText(expo);
 
                 info("クリップボードへの出力が完了しました。CCFOLIAの部屋上で 貼り付け(Ctrl+V) が可能です。");
+                scroll_top();
             }else{
                 alert("データ取得に失敗しました ("+req.status+")");
             }
@@ -83,6 +84,7 @@ function export_CCF(){
     };
     req.open("GET", location.href+".js", false);
     req.send(null);
+    
 }
 
 function export_JSO(){
@@ -94,6 +96,17 @@ function export_JSO(){
         temp.click();temp.remove();
     }
     
+}
+
+function export_CPE(){
+
+}
+
+function scroll_top(){
+    window.scroll({
+        top: 0,
+        behavior: "smooth",
+    });
 }
 
 function random_sure(){
@@ -241,11 +254,42 @@ function vMain(){
         base.appendChild(h4);
     
         const main = document.createElement("div");
+            // options
+            const spnOPT = document.createElement("span");
+            spnOPT.setAttribute("rel","tooltip");
+                // chat sort?
+                const lblCHP = document.createElement("label");
+                    lblCHP.appendChild(document.createTextNode("並び順/まとめる: "));
+                    const selCHP = document.createElement("select");
+                    
+                    lblCHP.appendChild(selCHP);
+                spnOPT.appendChild(lblCHP);
+
+                // changed only?
+                const lblACT = document.createElement("label");
+                    const chkACT = document.createElement("input");
+                    chkACT.type="checkbox";
+                    chkACT.checked = true;
+                    lblACT.appendChild(chkACT);
+                    lblACT.appendChild(document.createTextNode(" 変更された技能のみ出力"));
+                spnOPT.appendChild(lblACT);
+
+                // dice prefix?
+                const lblPRF = document.createElement("label");
+                    lblPRF.appendChild(document.createTextNode("ダイスの種類: "));
+                    const selPRF = document.createElement("select");
+                    
+                    lblPRF.appendChild(selPRF);
+                spnOPT.appendChild(lblPRF);
+
+            main.appendChild(spnOPT);
+
+            // ccfolia export
             const spnCCF = document.createElement("span");
             spnCCF.setAttribute("rel","tooltip")
             spnCCF.dataset["html"]="true";
             spnCCF.dataset["toggle"]="tooltip";
-            spnCCF.title="";
+            spnCCF.title=true;
             spnCCF.dataset["originalTitle"]="CCFOLIA用の駒データを出力します。<br>※クリップボードが上書きされます。";
 
                 const btnCCF = document.createElement("input");
@@ -257,11 +301,29 @@ function vMain(){
                 spnCCF.appendChild(btnCCF);
             main.appendChild(spnCCF);
 
+            // chat export
+            const spnCPE = document.createElement("span");
+            spnCPE.setAttribute("rel","tooltip")
+            spnCPE.dataset["html"]="true";
+            spnCPE.dataset["toggle"]="tooltip";
+            spnCPE.title=true;
+            spnCPE.dataset["originalTitle"]="チャットパレットを出力します。<br>※クリップボードが上書きされます。";
+
+                const btnCPE = document.createElement("input");
+                btnCPE.onclick=export_CPE;
+                btnCPE.value="チャットパレット出力";
+                btnCPE.type="button";
+                btnCPE.classList.add("full","xbtn","btn-xccf");
+                
+                spnCPE.appendChild(btnCPE);
+            main.appendChild(spnCPE);
+
+            // json export
             const spnJSO = document.createElement("span");
             spnJSO.setAttribute("rel","tooltip")
             spnJSO.dataset["html"]="true";
             spnJSO.dataset["toggle"]="tooltip";
-            spnJSO.title="";
+            spnJSO.title=true;
             spnJSO.dataset["originalTitle"]="JSON形式のファイル出力します。";
 
                 const btnJSO = document.createElement("input");

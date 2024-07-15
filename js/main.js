@@ -40,9 +40,15 @@ function execLink(){
 
 
 function rollDice(){
+    const title = document.getElementById("md_title");
+    const disp = document.getElementById("md_disp");
     var dice = document.getElementById("preD").selectedIndex +1;
     var max = Number(document.getElementById("sufD").value);
     
+    if (max <= 0) {
+        alert("ダイスの目が無効です");
+    }
+
     var tmp = 0;
     var res = 0;
     var resa = [];
@@ -51,7 +57,10 @@ function rollDice(){
         res += tmp;
         resa.push(tmp);
     }
-    console.log(res,resa);
+    
+    title.innerText = "Result";
+    disp.innerText = resa.join(", ");
+
 }
 
 

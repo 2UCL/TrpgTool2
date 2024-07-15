@@ -101,6 +101,7 @@ p{
     animation-timing-function: ease-out;
 }
 
+
 @keyframes popupAnime{
     from{
         display: none;
