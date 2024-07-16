@@ -28,6 +28,7 @@ p{
 
 
 
+
 .title {
     font-size: 28px;
     margin: 5px;
@@ -38,6 +39,10 @@ p{
     font-size: 18px;
     margin: 0px;
     background: #333333;
+}
+
+.cent {
+    text-align: center;
 }
 
 .main2{
@@ -52,6 +57,10 @@ p{
     outline-style: none;
     border: 0px;
     
+}
+
+.dispD{
+    font-size: 56px;
 }
 
 .preD{

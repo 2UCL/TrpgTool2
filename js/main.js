@@ -46,21 +46,21 @@ function rollDice(){
     var max = Number(document.getElementById("sufD").value);
     
     if (max <= 0) {
-        alert("ダイスの目が無効です");
+        title.innerText = "Dice Error!";
+        disp.innerText = "ダイスの目が無効です";
+        disp.classList.remove("dispD");
+    } else {
+        var tmp = 0;
+        var resa = [];
+        for (var i = 0; i < dice; i++){
+            tmp = Math.floor( Math.random() * max) + 1;
+            resa.push(100);
+        }
+        
+        title.innerText = "Result";
+        disp.innerText = resa.join(", ");
+        disp.classList.add("dispD");
     }
-
-    var tmp = 0;
-    var res = 0;
-    var resa = [];
-    for (var i = 0; i < dice; i++){
-        tmp = Math.floor( Math.random() * max) + 1;
-        res += tmp;
-        resa.push(tmp);
-    }
-    
-    title.innerText = "Result";
-    disp.innerText = resa.join(", ");
-
 }
 
 
