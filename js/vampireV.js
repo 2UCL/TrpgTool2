@@ -244,6 +244,8 @@ function info(text){
 }
 
 function vMain(){
+    // prepare option
+    let opt;
     // add object
     const side = document.querySelector("aside.leftsidebar.fixed");
 
@@ -259,8 +261,19 @@ function vMain(){
             spnOPT.setAttribute("rel","tooltip");
                 // chat sort?
                 const lblCHP = document.createElement("label");
-                    lblCHP.appendChild(document.createTextNode("並び順/まとめる: "));
+                    lblCHP.appendChild(document.createTextNode("並び替え: "));
                     const selCHP = document.createElement("select");
+
+                    let optCHP = ["= 標準","↓ 降順","↓) 降順/まとめる","↑ 昇順","↑) 昇順/まとめる"]
+
+                    for (let i = 0; i < optCHP.length; i++){
+                        opt = document.createElement("option");
+                        opt.setAttribute("value", optCHP[i]);
+                        opt.innerHTML = optCHP[i];
+                        if (i == 0) opt.setAttribute("selected", true);
+                        
+                        selCHP.appendChild(opt);
+                    }
                     
                     lblCHP.appendChild(selCHP);
                 spnOPT.appendChild(lblCHP);
@@ -279,6 +292,17 @@ function vMain(){
                     lblPRF.appendChild(document.createTextNode("ダイスの種類: "));
                     const selPRF = document.createElement("select");
                     
+                        opt = document.createElement("option");
+                        opt.setAttribute("value", "CCB");
+                        opt.innerHTML = "CCB";
+                        opt.setAttribute("selected", true);
+                        selPRF.appendChild(opt);
+                        
+                        opt = document.createElement("option");
+                        opt.setAttribute("value", "CC");
+                        opt.innerHTML = "CC";
+                        selPRF.appendChild(opt);
+
                     lblPRF.appendChild(selPRF);
                 spnOPT.appendChild(lblPRF);
 
@@ -286,10 +310,9 @@ function vMain(){
 
             // ccfolia export
             const spnCCF = document.createElement("span");
-            spnCCF.setAttribute("rel","tooltip")
-            spnCCF.dataset["html"]="true";
+            spnCCF.setAttribute("rel","tooltip");
+            spnCCF.dataset["html"]=true;
             spnCCF.dataset["toggle"]="tooltip";
-            spnCCF.title=true;
             spnCCF.dataset["originalTitle"]="CCFOLIA用の駒データを出力します。<br>※クリップボードが上書きされます。";
 
                 const btnCCF = document.createElement("input");
@@ -303,10 +326,9 @@ function vMain(){
 
             // chat export
             const spnCPE = document.createElement("span");
-            spnCPE.setAttribute("rel","tooltip")
-            spnCPE.dataset["html"]="true";
+            spnCPE.setAttribute("rel","tooltip");
+            spnCPE.dataset["html"]=true;
             spnCPE.dataset["toggle"]="tooltip";
-            spnCPE.title=true;
             spnCPE.dataset["originalTitle"]="チャットパレットを出力します。<br>※クリップボードが上書きされます。";
 
                 const btnCPE = document.createElement("input");
@@ -320,10 +342,9 @@ function vMain(){
 
             // json export
             const spnJSO = document.createElement("span");
-            spnJSO.setAttribute("rel","tooltip")
+            spnJSO.setAttribute("rel","tooltip");
             spnJSO.dataset["html"]="true";
             spnJSO.dataset["toggle"]="tooltip";
-            spnJSO.title=true;
             spnJSO.dataset["originalTitle"]="JSON形式のファイル出力します。";
 
                 const btnJSO = document.createElement("input");
@@ -337,6 +358,8 @@ function vMain(){
 
         base.appendChild(main);
     side.appendChild(base);
+
+    
 }
 
 function vRand(){
@@ -356,11 +379,11 @@ function vRand(){
 
 
 if ( document.getElementsByClassName("leftsidebar fixed").length ){
-    // CoC's CS page
+    // is CoC's CS page?
     if( document.querySelector("[href=\"https://charasheet.vampire-blood.net/coc_pc_making.html\"]") != null ) vRand();
     // if( document.getElementById("status_disp") != null ) vRand();
     
-    // already registed
+    // is already registed?
     if( document.getElementsByClassName("show_id").length ) vMain();
 }
     

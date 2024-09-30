@@ -54,7 +54,7 @@ function rollDice(){
         var resa = [];
         for (var i = 0; i < dice; i++){
             tmp = Math.floor( Math.random() * max) + 1;
-            resa.push(100);
+            resa.push(tmp);
         }
         
         title.innerText = "Result";
