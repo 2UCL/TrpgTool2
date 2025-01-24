@@ -1,5 +1,13 @@
 @charset "UTF-8";
 
+.xhr{
+    margin: inherit;
+}
+
+.acc-hide {
+    display: none;
+}
+
 .xbtn {
     display: inline-block;
     font-weight: 400;

@@ -1,9 +1,12 @@
 let randomCount = 0;
 
 const export_options = {
-    "sort_order" : 0,
+    "sort_order" : 1,
     "changed_only" : true,
-    "dice_prefix" : "CCB"
+    "dice_prefix" : "CCB",
+    "secret" : false,
+    "invisible" : false,
+    "hide_status" : false
 };
 
 const btnRND = document.createElement("input");
@@ -12,6 +15,8 @@ const btnRND = document.createElement("input");
     btnRND.value="ALL RANDOMIZE";
     btnRND.type="button";
     btnRND.classList.add("xbtn","btn-xrnd");
+
+const ability_labels = ["STR","CON","POW","DEX","APP","SIZ","INT","EDU"];
 
 const selects = Array.from({ length: 8 }, (_, i) => document.getElementById(`NA${i + 1}`));
 
@@ -24,8 +29,7 @@ function export_CCF(){
                 var base = {}, 
                     obj = {}, 
                     stat = Array(3).fill({}).map(() => ({})),
-                    pram = Array(8).fill({}).map(() => ({})),
-                    cmd = "";
+                    pram = Array(8).fill({}).map(() => ({}));
 
                 try {    
                     const source = JSON.parse(req.responseText);
@@ -49,9 +53,8 @@ function export_CCF(){
                     obj.status = stat;
                     
                     // params
-                    const labels = ["STR","CON","POW","DEX","APP","SIZ","INT","EDU"];
                     pram.forEach((item, index) => {
-                        item.label = labels[index];
+                        item.label = ability_labels[index];
                         item.value = source[`NP${index + 1}`];
                     });
                     // damage bonus
@@ -59,143 +62,29 @@ function export_CCF(){
                     obj.params = pram;
     
                     // commands - chat pallet
+                    obj.commands = chat_palette(source, 0);
                     
-                    // main skill
-                    // T[B]A(P) -> 
-                    // [SKILL] Battle, F?Search, Act, Communicate?, Knowledge
-                    // ( TYPE) <U>, Default, Shokugyo, Kyomi, A?(Seicho), Other, P?(Total)
-                    const skill = ["TBA","TFA","TAA","TCA","TKA"];
-                    let skill_name = [
-                        ["回避","キック","組み付き","こぶし（パンチ）","頭突き","投擲","マーシャルアーツ","拳銃","サブマシンガン","ショットガン","マシンガン","ライフル"],
-                        ["応急手当","鍵開け","隠す","隠れる","聞き耳","忍び歩き","写真術","精神分析","追跡","登攀","図書館","目星"],
-                        ["運転","機械修理","重機械操作","乗馬","水泳","製作","操縦","跳躍","電気修理","ナビゲート","変装"],
-                        ["言いくるめ","信用","説得","値切り","母国語"],
-                        ["医学","オカルト","化学","クトゥルフ神話","芸術","経理","考古学","コンピューター","心理学","人類学","生物学","地質学","電子工学","天文学","博物学","物理学","法律","薬学","歴史"]
-                    ];
-                    // option name
-                    if (source.unten_bunya != "") skill_name[2][0] += `(${source.unten_bunya})`;
-                    if (source.seisaku_bunya != "") skill_name[2][5] += `(${source.seisaku_bunya})`;
-                    if (source.main_souju_norimono != "") skill_name[2][6] += `(${source.main_souju_norimono})`;
-                    if (source.mylang_name != "") skill_name[3][4] += `(${source.mylang_name})`;
-                    if (source.geijutu_bunya != "") skill_name[4][4] += `(${source.geijutu_bunya})`;
-                    // external skill name
-                    skill.forEach((item, index) => {
-                        try {
-                            skill_name[index] = skill_name[index].concat(source[`${item}Name`]);
-                        } catch (error) {
-                            console.log("External skill name:", error);
-                        }
-                    });
-    
-                    // header command
-                    cmd  = `${export_options.dice_prefix}<={SAN} 【SAN値チェック】\n`;
-                    cmd += `${export_options.dice_prefix}<=${source.NP12} 【アイデア】\n`;
-                    cmd += `${export_options.dice_prefix}<=${source.NP13} 【幸運】\n`;
-                    cmd += `${export_options.dice_prefix}<=${source.NP14} 【知識】\n`;
-                    cmd += "　\n== 能力値 * 5 ====\n";
-                    labels.forEach( element => {
-                        cmd += `${export_options.dice_prefix}<=({${element}}*5) 【${element}】\n`
-                    });
-                    cmd += "　\n== 技能値 ====\n";
-    
-                    // base data
-                    var accessKey;
-                    let queue = [];
-                    skill.forEach( ( key, k_index ) => {
-                        accessKey = `${key}P`;
-                        source[accessKey].forEach( ( item, index ) => {
-                            var line = {};
-                            
-                            line.value = Number(item);
-                            line.label = skill_name[k_index][index];
-                            
-                            if ( ( export_options.changed_only && source[`${key}D`][index] != item ) || !export_options.changed_only ) queue.push(line);
-                        });
-                    });
-    
-                    // data sort
-                    var last_value = null;
-                    switch ( export_options.sort_order ){
-                        // 標準
-                        case 0:
-                            queue.forEach( element => {
-                                cmd += `${export_options.dice_prefix}<=${element.value} 【${element.label}】\n`
-                            });
-                            break;
-    
-                        // 降順
-                        case 1:
-                            queue.sort( (a, b) => {
-                                return (a.value > b.value) ? -1 : 1;
-                            });
-                            queue.forEach( element => {
-                                cmd += `${export_options.dice_prefix}<=${element.value} 【${element.label}】\n`
-                            });
-                            break;
-    
-                        // 降順 まとめる
-                        case 2:
-                            queue.sort( (a, b) => {
-                                return (a.value > b.value) ? -1 : 1;
-                            });
-                            queue.forEach( element => {
-                                if ( last_value != element.value ) {
-                                    if ( last_value != null ) cmd += "】\n";
-                                    cmd += `${export_options.dice_prefix}<=${element.value} 【${element.label}`;
-                                    last_value = element.value;
-                                } else {
-                                    cmd += `, ${element.label}`;
-                                }
-                            });
-                            cmd += "】\n";
-                            break;
-    
-                        // 昇順
-                        case 3:
-                            queue.sort( (a, b) => {
-                                return (a.value < b.value) ? -1 : 1;
-                            });
-                            queue.forEach( element => {
-                                cmd += `${export_options.dice_prefix}<=${element.value} 【${element.label}】\n`
-                            });
-                            break;
-    
-                        // 昇順 まとめる
-                        case 4:
-                            queue.sort( (a, b) => {
-                                return (a.value < b.value) ? -1 : 1;
-                            });
-                            queue.forEach( element => {
-                                if ( last_value != element.value ) {
-                                    if ( last_value != null ) cmd += "】\n";
-                                    cmd += `${export_options.dice_prefix}<=${element.value} 【${element.label}`;
-                                    last_value = element.value;
-                                } else {
-                                    cmd += `, ${element.label}`;
-                                }
-                            });
-                            cmd += "】\n";
-                            break;
-                    };
-    
-                    obj.commands = cmd;
-                    
-    
+                    // advanced options
+                    obj.secret = export_options.secret;
+                    obj.invisible = export_options.invisible;
+                    obj.hideStatus = export_options.hide_status;
+
+                    // format
                     base.kind = "character";
                     base.data = obj;
-    
+                    
                     const expo = JSON.stringify(base, null,"");
                     navigator.clipboard.writeText(expo);
-    
+                    
                     info("クリップボードへの出力が完了しました。CCFOLIAの部屋上で 貼り付け(Ctrl+V) が可能です。");
-                    scroll_top();
-
+                    
                 } catch (error) {
-                    console.log("JSON parse:", error);        
+                    warn("データ取得に失敗しました。\n保存してから行いましたか？", error, "JSON parse");
+                    
                 }
 
             }else{
-                alert("データ取得に失敗しました ("+req.status+")");
+                warn("データ取得に失敗しました。\n保存してから行いましたか？", req.status, "HTTP request");
             }
 
         }
@@ -203,6 +92,164 @@ function export_CCF(){
     req.open("GET", location.href + ".js", true);
     req.send(null);
     
+}
+
+function chat_palette(source, mode){
+    var cmd;
+
+    if ( mode == 1 && export_options.sort_order == 0 ) {
+        warn("チャットパレットが 出力しない に設定されています！", "chat_palette", "no export");
+        return -1;
+    };
+    
+    // main skill
+    // T[B]A(P) -> 
+    // [SKILL] Battle, F?Search, Act, Communicate?, Knowledge
+    // ( TYPE) <U>, Default, Shokugyo, Kyomi, A?(Seicho), Other, P?(Total)
+    const skill = ["TBA","TFA","TAA","TCA","TKA"];
+    let skill_name = [
+        ["回避","キック","組み付き","こぶし（パンチ）","頭突き","投擲","マーシャルアーツ","拳銃","サブマシンガン","ショットガン","マシンガン","ライフル"],
+        ["応急手当","鍵開け","隠す","隠れる","聞き耳","忍び歩き","写真術","精神分析","追跡","登攀","図書館","目星"],
+        ["運転","機械修理","重機械操作","乗馬","水泳","製作","操縦","跳躍","電気修理","ナビゲート","変装"],
+        ["言いくるめ","信用","説得","値切り","母国語"],
+        ["医学","オカルト","化学","クトゥルフ神話","芸術","経理","考古学","コンピューター","心理学","人類学","生物学","地質学","電子工学","天文学","博物学","物理学","法律","薬学","歴史"]
+    ];
+    const yomi_order = [
+        [211, 223, 232, 252, 332, 451, 712, 243, 310, 325, 711, 910],
+        [151, 213, 214, 215, 222, 321, 322, 342, 430, 452, 453, 740],
+        [130, 221, 323, 324, 331, 341, 350, 422, 441, 510, 640],
+        [121, 326, 344, 540, 652],
+        [122, 152, 212, 231, 241, 242, 251, 253, 327, 328, 343, 421, 442, 443, 610, 630, 651, 810, 940]
+    ];
+    // option name
+    if (source.unten_bunya != "") skill_name[2][0] += `(${source.unten_bunya})`;
+    if (source.seisaku_bunya != "") skill_name[2][5] += `(${source.seisaku_bunya})`;
+    if (source.main_souju_norimono != "") skill_name[2][6] += `(${source.main_souju_norimono})`;
+    if (source.mylang_name != "") skill_name[3][4] += `(${source.mylang_name})`;
+    if (source.geijutu_bunya != "") skill_name[4][4] += `(${source.geijutu_bunya})`;
+    // external skill name
+    skill.forEach((item, index) => {
+        try {
+            skill_name[index] = skill_name[index].concat(source[`${item}Name`]);
+            yomi_order[index] = yomi_order[index].concat(Array(3).fill( (index + 1) * 1000 ));
+        } catch (error) {
+            console.log("External skill name:", error);
+        }
+    });
+
+    // header command
+    cmd  = `${export_options.dice_prefix}<={SAN} 【SAN値チェック】\n`;
+    cmd += `${export_options.dice_prefix}<=${source.NP12} 【アイデア】\n`;
+    cmd += `${export_options.dice_prefix}<=${source.NP13} 【幸運】\n`;
+    cmd += `${export_options.dice_prefix}<=${source.NP14} 【知識】\n`;
+    cmd += "　\n== 能力値 * 5 ====\n";
+    if (mode == 1){
+        // chat palette only?
+        ability_labels.forEach( (item, index) => {
+            cmd += `${export_options.dice_prefix}<=(${source[`NP${index + 1}`]}*5) 【${item}】\n`
+        });
+    } else {
+        ability_labels.forEach( element => {
+            cmd += `${export_options.dice_prefix}<=({${element}}*5) 【${element}】\n`
+        });
+    }
+    cmd += "　\n== 技能値 ====\n";
+
+    // base data
+    var accessKey;
+    let queue = [];
+    skill.forEach( ( key, k_index ) => {
+        accessKey = `${key}P`;
+        source[accessKey].forEach( ( item, index ) => {
+            var line = {};
+            
+            line.value = Number(item);
+            line.label = skill_name[k_index][index];
+            line.yomi = yomi_order[k_index][index];
+            
+            if ( ( export_options.changed_only && source[`${key}D`][index] != item ) || !export_options.changed_only ) queue.push(line);
+        });
+    });
+
+    // data sort
+    var last_value = null;
+    switch ( export_options.sort_order ){
+        // No
+        case 0:
+            cmd = "";
+            break;
+        // 標準
+        case 1:
+            queue.forEach( element => {
+                cmd += `${export_options.dice_prefix}<=${element.value} 【${element.label}】\n`
+            });
+            break;
+
+        // 降順
+        case 2:
+            queue.sort( (a, b) => {
+                return (a.value > b.value) ? -1 : 1;
+            });
+            queue.forEach( element => {
+                cmd += `${export_options.dice_prefix}<=${element.value} 【${element.label}】\n`
+            });
+            break;
+
+        // 降順 まとめる
+        case 3:
+            queue.sort( (a, b) => {
+                return (a.value > b.value) ? -1 : 1;
+            });
+            queue.forEach( element => {
+                if ( last_value != element.value ) {
+                    if ( last_value != null ) cmd += "】\n";
+                    cmd += `${export_options.dice_prefix}<=${element.value} 【${element.label}`;
+                    last_value = element.value;
+                } else {
+                    cmd += `, ${element.label}`;
+                }
+            });
+            cmd += "】\n";
+            break;
+
+        // 昇順
+        case 4:
+            queue.sort( (a, b) => {
+                return (a.value < b.value) ? -1 : 1;
+            });
+            queue.forEach( element => {
+                cmd += `${export_options.dice_prefix}<=${element.value} 【${element.label}】\n`
+            });
+            break;
+
+        // 昇順 まとめる
+        case 5:
+            queue.sort( (a, b) => {
+                return (a.value < b.value) ? -1 : 1;
+            });
+            queue.forEach( element => {
+                if ( last_value != element.value ) {
+                    if ( last_value != null ) cmd += "】\n";
+                    cmd += `${export_options.dice_prefix}<=${element.value} 【${element.label}`;
+                    last_value = element.value;
+                } else {
+                    cmd += `, ${element.label}`;
+                }
+            });
+            cmd += "】\n";
+            break;
+        // 五十音順
+        case 6:
+            queue.sort( (a, b) => {
+                return (a.yomi < b.yomi) ? -1 : 1;
+            });
+            queue.forEach( element => {
+                cmd += `${export_options.dice_prefix}<=${element.value} 【${element.label}】\n`
+            });
+            break;
+    };
+
+    return cmd;
 }
 
 function export_JSO(){
@@ -217,8 +264,30 @@ function export_JSO(){
 }
 
 function export_CPE(){
-    var palette = ""
+    var req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        // respnse OK & connection OK then...
+        if( req.readyState == 4 ){
+            if ( req.status == 200 ){
+                try {    
+                    const source = JSON.parse(req.responseText);
+                    var expo = chat_palette(source, 1);
+                    if ( expo != -1 ){
+                        navigator.clipboard.writeText(expo);
+    
+                        info("クリップボードへの出力が完了しました。貼り付け(Ctrl+V) が可能です。");
+                    }
 
+                } catch (error) {
+                    warn("データ取得に失敗しました。\n保存してから行いましたか？", error, "JSON parse");
+                }
+            }else{
+                warn("データ取得に失敗しました。\n保存してから行いましたか？", req.status, "HTTP request");
+            }
+        }
+    };
+    req.open("GET", location.href + ".js", true);
+    req.send(null);
 }
 
 function scroll_top(){
@@ -232,9 +301,10 @@ function random_sure(){
     let isValueChanged = 0;
     const xBtnRnd = document.getElementById("xBtnRnd");
     if(xBtnRnd != null) xBtnRnd.remove();
-    for (var i = 0; i < selects.length ; i++){
-        isValueChanged += selects[i].selectedIndex;
-    }
+    selects.forEach( element =>{
+        isValueChanged += element.selectedIndex;
+    });
+
     if (isValueChanged){
         const base = document.getElementById("xSpnRnd");
         const askSpan = document.createElement("span");
@@ -344,10 +414,35 @@ function random_close(){
     document.getElementById("xSpnRnd").appendChild(btnRND);
 }
 
+function warn(text, detail, type){
+    const preInfo = document.getElementById("xInfo");
+    const context = `${text} (${detail})`;
+
+    if (preInfo != null){
+        preInfo.innerText = context;
+        preInfo.classList.replace("alert-success", "alert-danger");
+    }else{
+        const content = document.querySelector("div[class=maincontent]");
+
+            const base = document.createElement("div");
+            base.id = "xInfo";
+            base.classList.add("alert","alert-danger");
+            base.role="alert";
+            base.innerText = context;
+    
+        content.prepend(base);
+
+    }
+
+    console.log(`${type}: ${detail}`);
+    scroll_top();
+}
+
 function info(text){
     const preInfo = document.getElementById("xInfo");
     if (preInfo != null){
-        preInfo.innerHTML = text;
+        preInfo.innerText = text;
+        preInfo.classList.replace("alert-danger", "alert-success");
     }else{
         const content = document.querySelector("div[class=maincontent]");
 
@@ -355,23 +450,35 @@ function info(text){
             base.id = "xInfo";
             base.classList.add("alert","alert-success");
             base.role="alert";
-                const mes = document.createTextNode(text);
-                base.appendChild(mes);
+            base.innerText = text;
     
         content.prepend(base);
     }
+
+    scroll_top();
 }
 
 function vMain(){
     // prepare option
     let opt;
+    // custion line
+    const xhr = document.createElement("hr");
+    xhr.classList.add("xhr");
     // add object
     const side = document.querySelector("aside.leftsidebar.fixed");
+    document.getElementsByClassName("leftsidebar fixed")[0].children[3].children[1].onclick
+    // option contexts
+    const optCHP = ["X 出力しない","= 標準", "↓ 降順", "↓) 降順/まとめる", "↑ 昇順", "↑) 昇順/まとめる","あ 五十音順"],
+          optPRF = ["CCB", "CC", "1d100"],
+          optADV = ["ステータスを非公開", "発言時キャラ表示しない", "盤面キャラ一覧に表示しない"];
+    // configure
+    const cfgADV = ["secret", "invisible", "hide_status"];
 
     // temporary fix
     document.getElementsByClassName("trifull btn btn-info")[0].innerHTML = "<span class=\"fa fa-file-text-o\"></span> TXT"
-
+    
     const base = document.createElement("section");
+    base.id = "trpgtool2";
         const h4 = document.createElement("h4");
             const title = document.createTextNode("TrpgTool2 Extention");
             h4.appendChild(title);
@@ -385,17 +492,17 @@ function vMain(){
                 const lblCHP = document.createElement("label");
                     lblCHP.appendChild(document.createTextNode("並び替え: "));
                     const selCHP = document.createElement("select");
+                    
 
-                    let optCHP = ["= 標準","↓ 降順","↓) 降順/まとめる","↑ 昇順","↑) 昇順/まとめる"]
-
-                    for (let i = 0; i < optCHP.length; i++){
+                    optCHP.forEach( (item, index) => {
                         opt = document.createElement("option");
-                        opt.setAttribute("value", optCHP[i]);
-                        opt.innerHTML = optCHP[i];
-                        if (i == export_options.sort_order) opt.setAttribute("selected", true);
+                        opt.setAttribute("value", item);
+                        opt.innerText = item;
+                        if (index == export_options.sort_order) opt.setAttribute("selected", true);
                         
                         selCHP.appendChild(opt);
-                    }
+                    });
+                    
                     selCHP.onchange = function(){
                         export_options.sort_order = this.selectedIndex;
                     };
@@ -414,22 +521,21 @@ function vMain(){
                     lblACT.appendChild(chkACT);
                     lblACT.appendChild(document.createTextNode(" 変更された技能のみ出力"));
                 spnOPT.appendChild(lblACT);
-
+                
                 // dice prefix?
                 const lblPRF = document.createElement("label");
                     lblPRF.appendChild(document.createTextNode("ダイスの種類: "));
                     const selPRF = document.createElement("select");
-                    
-                        opt = document.createElement("option");
-                        opt.setAttribute("value", "CCB");
-                        opt.innerHTML = "CCB";
-                        opt.setAttribute("selected", true);
-                        selPRF.appendChild(opt);
                         
-                        opt = document.createElement("option");
-                        opt.setAttribute("value", "CC");
-                        opt.innerHTML = "CC";
-                        selPRF.appendChild(opt);
+                        optPRF.forEach( element => {
+                            opt = document.createElement("option");
+                            opt.setAttribute("value", element);
+                            opt.innerText = element;
+
+                            if ( element == export_options.dice_prefix ) opt.setAttribute("selected", true);
+                            
+                            selPRF.appendChild(opt);
+                        });
 
                         selPRF.onchange = function(){
                             export_options.dice_prefix = this.value;
@@ -437,6 +543,19 @@ function vMain(){
 
                     lblPRF.appendChild(selPRF);
                 spnOPT.appendChild(lblPRF);
+
+                // changed only?
+                optADV.forEach( (item, index) => {
+                    const lblADV = document.createElement("label");
+                        const chkADV = document.createElement("input");
+                        chkADV.type = "checkbox";
+                        chkADV.onchange = function(){
+                            export_options[`${cfgADV[index]}`] = this.checked;
+                        }
+                        lblADV.appendChild(chkADV);
+                        lblADV.appendChild(document.createTextNode(` ${item}`));
+                    spnOPT.appendChild(lblADV);
+                });
 
             main.appendChild(spnOPT);
 
@@ -465,12 +584,14 @@ function vMain(){
 
                 const btnCPE = document.createElement("input");
                 btnCPE.onclick=export_CPE;
-                btnCPE.value="チャットパレット出力";
+                btnCPE.value="チャットパレット 出力";
                 btnCPE.type="button";
                 btnCPE.classList.add("full","xbtn","btn-xccf");
                 
                 spnCPE.appendChild(btnCPE);
-            // main.appendChild(spnCPE);
+            main.appendChild(spnCPE);
+
+            main.appendChild(xhr);
 
             // json export
             const spnJSO = document.createElement("span");
@@ -491,7 +612,23 @@ function vMain(){
         base.appendChild(main);
     side.appendChild(base);
 
-    
+    // accordion option
+    for (var i = 3; i <= 5; i++){
+        const accHeader = side.children[i];
+        const guideContext = document.createElement("span");
+        // guideContext.id = "xguide";
+        guideContext.innerText = " ↑ ヘッダ クリックで展開 ↑";
+        guideContext.className = "acc-hide";
+        accHeader.appendChild(guideContext);
+
+        accHeader.children[0].onclick = function() {
+            accHeader.children[1].classList.toggle("acc-hide");
+            accHeader.children[2].classList.toggle("acc-hide");
+        };
+
+        // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        if (i == 3 || i == 4) accHeader.children[0].click();
+    }
 }
 
 function vRand(){
@@ -509,7 +646,7 @@ function vRand(){
     base.appendChild(spnRND);
 }
 
-
+// character main
 if ( document.getElementsByClassName("leftsidebar fixed").length ){
     // is CoC's CS page?
     if( document.querySelector("[href=\"https://charasheet.vampire-blood.net/coc_pc_making.html\"]") != null ) vRand();
@@ -519,3 +656,18 @@ if ( document.getElementsByClassName("leftsidebar fixed").length ){
     if( document.getElementsByClassName("show_id").length ) vMain();
 }
     
+// help main
+if (location.href.indexOf("https://charasheet.vampire-blood.net/help") === 0){
+    const main = document.getElementsByClassName("maincontent")[0],
+          display_base = document.createElement("section"),
+          header = document.createElement("h4"),
+          context = document.createElement("p");
+
+    header.innerText = "★★★ TrpgTool2 の お問い合わせ ★★★★★";
+    context.innerHTML = 'TrpgTool2 についての 不具合報告 または お問い合わせ につきましては、 <u>キャラクター保管所様 ではなく</u>、<br/> <b>必ず</b> <a href="https://chromewebstore.google.com/detail/ngjonoelmonhcjejhdiedhaicnmcjjop">TrpgTool2 のストアページ</a> からお問い合わせください。';
+    
+    display_base.appendChild(header);
+    display_base.appendChild(context);
+
+    main.prepend(display_base);
+};
