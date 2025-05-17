@@ -52,7 +52,7 @@ function rollDice(){
     } else {
         var tmp = 0;
         var resa = [];
-        for (var i = 0; i < dice; i++){
+        for (let i = 0; i < dice; i++){
             tmp = Math.floor( Math.random() * max) + 1;
             resa.push(tmp);
         }
