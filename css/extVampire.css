@@ -93,6 +93,10 @@
     box-shadow: 0 0 0 .2rem #88552280
 }
 
+.btn-mini {
+    margin: 0;
+    padding: 1px 2px;
+}
 
 .btn-xrnd {
     color: #fff;
@@ -102,28 +106,28 @@
 
 .btn-xrnd:hover {
     color: #ffffff;
-    background-color: #c1272d;
-    border-color: #c1272d
+    background-color: #707070;
+    border-color: #404040;
 }
 
 .btn-xrnd.focus,.btn-xrnd:focus {
-    box-shadow: 0 0 0 .2rem rgba(193,39,45,.5)
+    box-shadow: 0 0 0 .2rem rgba(64,64,64,.5)
 }
 
 .btn-xrnd.disabled,.btn-xrnd:disabled {
     color: #fff;
-    background-color: #705050;
-    border-color: #705050
+    background-color: #505050;
+    border-color: #505050;
 }
 
 .btn-xrnd:not(:disabled):not(.disabled).active,.btn-xrnd:not(:disabled):not(.disabled):active,.show>.btn-xrnd.dropdown-toggle {
     color: #fff;
-    background-color: #5c1212;
-    border-color: #5c1212
+    background-color: #404040;
+    border-color: #404040;
 }
 
 .btn-xrnd:not(:disabled):not(.disabled).active:focus,.btn-xrnd:not(:disabled):not(.disabled):active:focus,.show>.btn-xrnd.dropdown-toggle:focus {
-    box-shadow: 0 0 0 .2rem rgba(193,39,45,.5)
+    box-shadow: 0 0 0 .2rem rgba(64,64,64,.5)
 }
 
 

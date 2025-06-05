@@ -9,7 +9,7 @@ const export_options = {
     "hide_status": false
 };
 
-const btnRND = document.createElement("input");
+const btnRND = document.createElement("input")
 btnRND.id = "xBtnRnd";
 btnRND.onclick = random_sure;
 btnRND.value = "ALL RANDOMIZE";
@@ -340,9 +340,9 @@ function random_sure() {
 }
 
 function dice(dice, max) {
-    var tmp = 0;
-    var res = 0;
-    var resa = [];
+    let tmp = 0;
+    let res = 0;
+    let resa = [];
     for (let i = 0; i < dice; i++) {
         tmp = Math.floor(Math.random() * max) + 1;
         res += tmp;
@@ -352,30 +352,66 @@ function dice(dice, max) {
     return [res, resa];
 }
 
+function random_manual() {
+    const table = document.getElementsByClassName("pc_making")[0];
+    table.getElementsByTagName("th")[0].innerText = "個別ﾀﾞｲｽ →";
+
+    for (let i = 1; i < 9; i++) {
+        const base = table.getElementsByTagName("th")[i];
+        
+        let btn = document.createElement("input");
+        btn.value = ability_labels[i - 1];
+        btn.type = "button";
+        btn.classList.add("xbtn", "btn-xrnd", "btn-mini");
+        btn.addEventListener("click", function() {
+            // dice
+            console.log(`-- MANUAL ABILITY (${ability_labels[i - 1]})`);
+            ability_random(i - 1);
+            
+            // disp
+            this.value = "OK!";
+            this.classList.add("btn-xyes");
+            
+            setTimeout(() => {
+                this.value = ability_labels[i - 1];
+                this.classList.remove("btn-xyes");
+            }, "1000");
+        });
+
+        base.innerText = "";
+        base.appendChild(btn);
+    }
+}
+
+function ability_random(index) {
+    // 礼儀は守らなきゃ... 
+    //STR...APP = 3D6; SIZ,INT = 2D6+6; EDU = 3D6+3
+    if (index < 5) {
+        selects[index].selectedIndex = dice(3, 6)[0] - 1;
+    } else {
+        switch (index) {
+            case 5:
+                selects[index].selectedIndex = dice(2, 6)[0] + 6 - 1;
+                break;
+            case 6:
+                selects[index].selectedIndex = dice(2, 6)[0] + 6 - 7;
+                break;
+            default:
+                //case7
+                selects[index].selectedIndex = dice(3, 6)[0] + 3 - 5;
+        }
+    }
+    
+    selects[0].dispatchEvent(new Event("change"));
+}
+
 function random_exec() {
     randomCount++;
     random_clear();
     const xResSpn = document.getElementById("xResSpn");
     // table random
-    for (let i = 0; i < selects.length; i++) {
-        // 礼儀は守らなきゃ... 
-        //STR...APP = 3D6; SIZ,INT = 2D6+6; EDU = 3D6+3
-        if (i < 5) {
-            selects[i].selectedIndex = (dice(3, 6)[0] - 1);
-        } else {
-            switch (i) {
-                case 5:
-                    selects[i].selectedIndex = (dice(2, 6)[0] + 6 - 1);
-                    break;
-                case 6:
-                    selects[i].selectedIndex = (dice(2, 6)[0] + 6 - 7);
-                    break;
-                default:
-                    //case7
-                    selects[i].selectedIndex = (dice(3, 6)[0] + 3 - 5);
-            }
-        }
-    }
+    console.log("-- ALL ABILITY");
+    for (let i = 0; i < selects.length; i++) ability_random(i);
 
     // onchange
     selects[0].dispatchEvent(new Event("change"));
@@ -638,6 +674,9 @@ function vMain() {
 }
 
 function vRand() {
+    // add manual random
+    random_manual();
+
     // add rand option
     const base = document.getElementById("status_disp").getElementsByClassName("disp")[0];
     const spnRND = document.createElement("span");
@@ -648,7 +687,13 @@ function vRand() {
     spnRND.title = "";
     spnRND.dataset["originalTitle"] = "能力値をダイスで決定します。<br>※現在の能力値が上書きされます。";
 
+    // custion line
+    const xhr = document.createElement("hr");
+    xhr.classList.add("xhr");
+    
     spnRND.appendChild(btnRND);
+    
+    base.appendChild(xhr);
     base.appendChild(spnRND);
 }
 

@@ -1,7 +1,7 @@
 {
     "name": "TrpgTool2",
     "description": "for CoC TRPG Tool 2",
-    "version": "0.8.1",
+    "version": "0.9.0",
     "manifest_version": 3,
     "icons": {
         "16": "img/ico16.png",
